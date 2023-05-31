@@ -156,8 +156,8 @@ public:
 template<typename _FIRST_T, typename _SECOND_T>
 class Pair {
 public:
-	Pair(_FIRST_T f, _SECOND_T s) { first = f; second = s; }
-	Pair(const Pair& a) { first = a.first; second = a.second; }
+	Pair(_FIRST_T f, _SECOND_T s) : first(f), second(s) {};
+	Pair(const Pair& a) : Pair(a.first, a.second) {};
 
 	_FIRST_T first;
 	_SECOND_T second;
