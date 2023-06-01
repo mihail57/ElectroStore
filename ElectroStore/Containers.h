@@ -94,18 +94,6 @@ public:
 
 
 template<typename T>
-class Queue : public BasicContainer<T> {
-public:
-	Queue() : BasicContainer<T>() {};
-	Queue(const Queue& a) : BasicContainer<T>(a) {};
-
-	inline void push(T elem) { this->_insert(elem, -1); }
-	[[nodiscard]] inline const T& get_top() { return *(this->dummy_first->next->get_elem()); }
-	inline T pop() { return this->_remove(0); }
-};
-
-
-template<typename T>
 struct ListIterator {
 private:
 	Node<T>* elem;
@@ -121,17 +109,41 @@ public:
 		elem = elem->next;
 		return *this;
 	}
-	ListIterator operator++(int) { 
+	ListIterator operator++(int) {
 		if (!elem->next) throw std::out_of_range("");
-		elem = elem->next; 
-		return *this; 
+		elem = elem->next;
+		return *this;
 	}
 	T* operator->() { return elem->get_elem(); }
 	T& operator*() { return *(elem->get_elem()); }
 };
 
+
+
 template<typename T>
-class List : public BasicContainer<T> {
+class Iterable abstract {
+protected:
+	Iterable() {};
+public:
+	virtual ListIterator<T> begin() = 0;
+	virtual ListIterator<T> end() = 0;
+};
+
+
+
+template<typename T>
+class Queue : public BasicContainer<T> {
+public:
+	Queue() : BasicContainer<T>() {};
+	Queue(const Queue& a) : BasicContainer<T>(a) {};
+
+	inline void push(T elem) { this->_insert(elem, -1); }
+	[[nodiscard]] inline const T& get_top() { return *(this->dummy_first->next->get_elem()); }
+	inline T pop() { return this->_remove(0); }
+};
+
+template<typename T>
+class List : public BasicContainer<T>, public Iterable<T> {
 public:
 	List() : BasicContainer<T>() {};
 	List(const List& a) : BasicContainer<T>(a) {};
@@ -144,10 +156,10 @@ public:
 	inline T remove(int32_t index) { return this->_remove(index); }
 	[[nodiscard]] inline T& get(int32_t index) { return *(this->_get(index)->get_elem()); }
 
-	inline ListIterator<T> begin() { 
+	virtual ListIterator<T> begin() { 
 		return ListIterator<T>(this->dummy_first->next); 
 	}
-	inline ListIterator<T> end() {
+	virtual ListIterator<T> end() {
 		return ListIterator<T>(this->dummy_last); 
 	}
 };

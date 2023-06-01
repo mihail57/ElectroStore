@@ -31,7 +31,7 @@ public:
 		total_price -= t.first->get_price() * t.second;
 	}
 
-	std::string print();
+	friend std::ostream& operator<<(std::ostream& str, Order& o);
 };
 
 #endif // !ORDER_H

@@ -24,25 +24,38 @@ std::string dot_or_comma(int index, int max) {
     else return ".\n";
 }
 
+bool check_input(std::istream& str, int& target) {
+    std::string s;
+    str >> s;
+    try {
+        target = stoi(s);
+        return true;
+    }
+    catch (std::exception) {
+        std::cout << "Error! Unexpected input! Try again\n";
+        return false;
+    }
+}
+
 Queue<Order> orders;
 
 void add_to_order(Order& o) {
     int input, i;
-    std::string end;
+    std::string inp;
     Device* ordered;
 
     std::cout << "\nEnter type of ordered device: \"1\" for notebook, \"2\" for phone, \"3\" for tablet: ";
-    std::cin >> input;
+    if (!check_input(std::cin, input)) return;
     switch (input)
     {
     case 1:
         std::cout << "Currently we have " + std::to_string(NOTEBOOKS_COUNT) + " notebook models: ";
         for (i = 0; i < NOTEBOOKS_COUNT; i++) std::cout << std::to_string(i + 1) + ") " + notebooks[i]->get_name() + dot_or_comma(i, NOTEBOOKS_COUNT);
         std::cout << "Enter index of ordered notebook model: ";
-        std::cin >> input;
+        if (!check_input(std::cin, input)) return;
         if (input - 1 >= 0 && input - 1 < NOTEBOOKS_COUNT) ordered = notebooks[input - 1];
         else {
-            std::cout << "Error! No such notebook index! Try again";
+            std::cout << "Error! No such notebook index! Try again\n";
             return;
         }
         break;
@@ -50,7 +63,7 @@ void add_to_order(Order& o) {
         std::cout << "Currently we have " + std::to_string(PHONES_COUNT) + " phone models: ";
         for (i = 0; i < PHONES_COUNT; i++) std::cout << std::to_string(i + 1) + ") " + phones[i]->get_name() + dot_or_comma(i, PHONES_COUNT);
         std::cout << "Enter index of ordered phone model: ";
-        std::cin >> input;
+        if (!check_input(std::cin, input)) return;
         if (input - 1 >= 0 && input - 1 < PHONES_COUNT) ordered = phones[input - 1];
         else {
             std::cout << "Error! No such phone index! Try again\n";
@@ -61,7 +74,7 @@ void add_to_order(Order& o) {
         std::cout << "Currently we have " + std::to_string(TABLETS_COUNT) + " tablet models: ";
         for (i = 0; i < TABLETS_COUNT; i++) std::cout << std::to_string(i + 1) + ") " + tablets[i]->get_name() + dot_or_comma(i, TABLETS_COUNT);
         std::cout << "Enter index of ordered tablet model: ";
-        std::cin >> input;
+        if (!check_input(std::cin, input)) return;
         if (input - 1 >= 0 && input - 1 < TABLETS_COUNT) ordered = tablets[input - 1];
         else {
             std::cout << "Error! No such tablet index! Try again\n";
@@ -73,18 +86,18 @@ void add_to_order(Order& o) {
         return;
     }
     std::cout << "Enter amount of ordered devices: ";
-    std::cin >> input;
+    if (!check_input(std::cin, input)) return;
     o.add_to_order(ordered, input);
 }
 
 void edit_order(Order& o) {
     int input, i;
-    std::string end;
+    std::string inp;
 
-    std::cout << "\nCurrent order info:\n" + o.print();
+    std::cout << "\nCurrent order info:\n" << o;
     std::cout << "\nEnter index of the order part you want to edit or remove: ";
 
-    std::cin >> i;
+    if (!check_input(std::cin, i)) return;
     if (i - 1 < 0 || i - 1 >= o.count()) 
     {
         std::cout << "Error! No order part with such index! Try again\n";
@@ -92,13 +105,13 @@ void edit_order(Order& o) {
     }
 
     std::cout << "If you want to edit this part of order enter \"1\", otherwise, if you want to remove it enter \"2\": ";
-    std::cin >> input;
+    if (!check_input(std::cin, input)) return;
     auto& elem = o.get(i - 1);
     switch (input)
     {
     case 1:
         std::cout << "Enter new amount of devices in this entry: ";
-        std::cin >> input;
+        if (!check_input(std::cin, input)) return;
         elem.second = input;
         std::cout << "Amount of devices changed.\n";
         break;
@@ -114,7 +127,7 @@ void edit_order(Order& o) {
 
 void register_order() {
     int input;
-    std::string end;
+    std::string inp;
 
     Order o;
 
@@ -123,7 +136,7 @@ void register_order() {
         if (o.count() > 0) {
             std::cout << "\nTo add new device to the order enter \"1\", to edit or remove something from it enter \"2\"";
             std::cout << "\nNote: you can only edit amount of devices in order entry, not the device model itself!\n";
-            std::cin >> input;
+            if (!check_input(std::cin, input)) continue;
             switch (input)
             {
             case 1:
@@ -139,11 +152,11 @@ void register_order() {
         }
         else add_to_order(o);
 
-        std::cout << "\nCurrent order info:\n" + o.print();
+        std::cout << "\nCurrent order info:\n" << o;
 
         std::cout << "\nIf the order is finished enter \"Y\", otherwise enter any other symbol\n";
-        std::cin >> end;
-        if (end == "Y" || end == "y") break;
+        std::cin >> inp;
+        if (inp == "Y" || inp == "y") break;
     }
 
     if (o.count() > 0) {
@@ -163,7 +176,7 @@ void receive_order() {
     std::string input;
     int i;
 
-    std::cout << "\nReceived order info:\n" + o.print();
+    std::cout << "\nReceived order info:\n" << o;
     while (true)
     {
         std::cout << "\nIf you want to get detailed information about any device model from order enter \"d\" or any other symbol to leave.\n";
@@ -171,7 +184,7 @@ void receive_order() {
         if (input == "d")
         {
             std::cout << "Enter index of needed device: ";
-            std::cin >> i;
+            if (!check_input(std::cin, i)) continue;
 
             if (i - 1 < 0 || i - 1 >= o.count())
             {
